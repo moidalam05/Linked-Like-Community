@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { HiMenu } from "react-icons/hi";
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Replace with actual auth state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -21,34 +21,57 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 via-cyan-700 to-blue-800 text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <nav className="bg-white text-gray-500 shadow-md border-b border-b-orange-100">
+      <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold tracking-wide">
+        <Link to="/" className="text-2xl font-bold text-black tracking-wide">
           XploreConnect
         </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6 font-medium">
-          <Link to="/" className="hover:underline">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "hover:underline"
+            }
+          >
             Home
-          </Link>
-          <Link to="/explore" className="hover:underline">
+          </NavLink>
+          <NavLink
+            to="/explore"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "hover:underline"
+            }
+          >
             Explore
-          </Link>
-          <Link to="/community" className="hover:underline">
+          </NavLink>
+          <NavLink
+            to="/community"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "hover:underline"
+            }
+          >
             Community
-          </Link>
-          <Link to="/jobs" className="hover:underline">
+          </NavLink>
+          <NavLink
+            to="/jobs"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "hover:underline"
+            }
+          >
             Jobs
-          </Link>
+          </NavLink>
         </div>
 
         {/* Auth / Profile */}
         <div className="hidden md:flex items-center gap-4">
           {!isLoggedIn ? (
             <>
-              <Link to="/login" className="hover:underline">
+              <Link
+                to="/login"
+                className="hover:underline text-black font-semibold"
+              >
                 Login
               </Link>
             </>
@@ -102,23 +125,46 @@ const Navbar = () => {
 
       {/* Mobile Menu Links */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-blue-900 text-white px-4 pb-4 space-y-3">
-          <Link to="/" className="block hover:underline">
+        <div className="md:hidden bg-white text-gray-500 px-4 pb-4 space-y-3">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "block hover:underline"
+            }
+          >
             Home
-          </Link>
-          <Link to="/explore" className="block hover:underline">
+          </NavLink>
+          <NavLink
+            to="/explore"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "block hover:underline"
+            }
+          >
             Explore
-          </Link>
-          <Link to="/community" className="block hover:underline">
+          </NavLink>
+          <NavLink
+            to="/community"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "block hover:underline"
+            }
+          >
             Community
-          </Link>
-          <Link to="/jobs" className="block hover:underline">
+          </NavLink>
+          <NavLink
+            to="/jobs"
+            className={({ isActive }) =>
+              isActive ? "underline text-black" : "block hover:underline"
+            }
+          >
             Jobs
-          </Link>
+          </NavLink>
 
           {!isLoggedIn ? (
             <>
-              <Link to="/login" className="block hover:underline">
+              <Link
+                to="/login"
+                className="block hover:underline text-black font-semibold"
+              >
                 Login
               </Link>
             </>
