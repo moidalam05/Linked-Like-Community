@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import mongoose from "mongoose";
 
 const options = {
   httpOnly: true,
@@ -110,4 +111,48 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User profile updated successfully"));
+});
+
+// Public User Profile fetching
+export const getPublicUserProfile = asyncHandler(async (req, res) => {
+  const { id: userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError("Invalid user ID", 400);
+  }
+
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, user, "Public user profile fetched successfully")
+    );
+});
+
+// change password
+export const changePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  const isPasswordValid = await user.comparePassword(oldPassword);
+  if (!isPasswordValid) {
+    throw new ApiError("Old password is incorrect", 400);
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Password changed successfully"));
 });

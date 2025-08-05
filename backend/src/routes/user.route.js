@@ -2,6 +2,8 @@ import express from "express";
 import { validate } from "../middlewares/validate.js";
 import { registerSchema, loginSchema } from "../validators/user.validator.js";
 import {
+  changePassword,
+  getPublicUserProfile,
   getUserProfile,
   loginUser,
   logoutUser,
@@ -17,6 +19,7 @@ Router.route("/login").post(validate(loginSchema), loginUser);
 Router.route("/logout").post(logoutUser);
 Router.route("/profile").get(authMiddleware, getUserProfile);
 Router.route("/profile").patch(authMiddleware, updateUserProfile);
-// Router.route("/profile/:id").post();
+Router.route("/profile/:id").get(getPublicUserProfile);
+Router.route("/change-password").patch(authMiddleware, changePassword);
 
 export default Router;
