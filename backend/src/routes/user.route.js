@@ -1,13 +1,17 @@
 import express from "express";
 import { validate } from "../middlewares/validate.js";
 import { registerSchema, loginSchema } from "../validators/user.validator.js";
-import { loginUser, registerUser } from "../controllers/user.controller.js";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "../controllers/user.controller.js";
 
 const Router = express.Router();
 
 Router.route("/register").post(validate(registerSchema), registerUser);
 Router.route("/login").post(validate(loginSchema), loginUser);
-// Router.route("/logout").post();
+Router.route("/logout").post(logoutUser);
 // Router.route("/profile").post();
 // Router.route("/profile").patch();
 // Router.route("/profile/:id").post();

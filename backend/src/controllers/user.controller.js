@@ -5,10 +5,12 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const options = {
   httpOnly: true,
-  secure: false,
+  secure: process.env.NODE_ENV === "production",
   maxAge: 24 * 60 * 60 * 1000,
+  sameSite: "lax",
 };
 
+// Register user
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, bio } = req.body;
 
@@ -34,6 +36,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, createdUser, "User created successfully"));
 });
 
+// Login user
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -48,11 +51,23 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 
   const token = user.generateToken();
-
   user.password = undefined;
 
   return res
     .cookie("authToken", token, options)
     .status(200)
     .json(new ApiResponse(200, user, "User logged in successfully"));
+});
+
+// Logout user
+export const logoutUser = asyncHandler(async (req, res) => {
+  res.clearCookie("authToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "User logged out successfully"));
 });
