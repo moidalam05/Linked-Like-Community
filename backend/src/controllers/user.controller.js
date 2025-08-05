@@ -73,4 +73,41 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 // User profile fetching
-export const getUserProfile = asyncHandler(async (req, res) => {});
+export const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id).select("-password");
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User profile fetched successfully"));
+});
+
+// Update user profile
+export const updateUserProfile = asyncHandler(async (req, res) => {
+  const { name, email, bio } = req.body;
+  const user = await User.findById(req.user?._id).select("-password");
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  if (email && email !== user.email) {
+    const emailExists = await User.findOne({ email });
+    if (emailExists) {
+      throw new ApiError("Email already in use", 400);
+    }
+    user.email = email;
+  }
+
+  if (name) user.name = name;
+  if (bio) user.bio = bio;
+
+  await user.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User profile updated successfully"));
+});
