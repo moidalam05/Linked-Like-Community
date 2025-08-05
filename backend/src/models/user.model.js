@@ -49,7 +49,7 @@ userSchema.methods.comparePassword = async function (password) {
 
 // Generate jwt token
 userSchema.methods.generateToken = function () {
-  return jwt.sign({ id: this._id }, config.jwtSecret, {
+  return jwt.sign({ _id: this._id }, config.jwtSecret, {
     expiresIn: config.jwtExpiry,
   });
 };
