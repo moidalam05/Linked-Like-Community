@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -81,9 +82,52 @@ export const getUserProfile = asyncHandler(async (req, res) => {
     throw new ApiError("User not found", 404);
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, user, "User profile fetched successfully"));
+  // Fetch posts created by the authenticated user
+  const posts = await Post.find({ author: req.user._id }).sort({
+    createdAt: -1,
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user,
+        posts,
+      },
+      "User profile and posts fetched successfully"
+    )
+  );
+});
+
+// Public User Profile fetching
+export const getPublicUserProfile = asyncHandler(async (req, res) => {
+  const { id: userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError("Invalid user ID", 400);
+  }
+
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new ApiError("User not found", 404);
+  }
+
+  // Fetch posts by random user
+  const posts = await Post.find({ author: userId }).sort({
+    createdAt: -1,
+  });
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        user,
+        posts,
+      },
+      "Public user profile fetched successfully"
+    )
+  );
 });
 
 // Update user profile
@@ -111,27 +155,6 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, user, "User profile updated successfully"));
-});
-
-// Public User Profile fetching
-export const getPublicUserProfile = asyncHandler(async (req, res) => {
-  const { id: userId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    throw new ApiError("Invalid user ID", 400);
-  }
-
-  const user = await User.findById(userId).select("-password");
-
-  if (!user) {
-    throw new ApiError("User not found", 404);
-  }
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, user, "Public user profile fetched successfully")
-    );
 });
 
 // change password
