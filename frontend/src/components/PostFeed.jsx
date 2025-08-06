@@ -93,7 +93,6 @@ const PostFeed = () => {
             post={post}
             isAuthenticated={isAuthenticated}
             user={data}
-            setPosts={setPosts}
           />
         ))}
       </div>

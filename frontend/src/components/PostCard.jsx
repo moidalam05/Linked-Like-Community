@@ -5,9 +5,12 @@ import { formatDistanceToNow } from "date-fns";
 import generateColorsFromString from "../hooks/generateColorForString";
 import { deletePost, getPosts } from "../features/posts/postSlice";
 import { useDispatch } from "react-redux";
+import { getPublicProfile } from "../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
@@ -44,11 +47,22 @@ const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
     }
   };
 
+  const getPublicUserProfile = async (userId) => {
+    const apiResponse = await dispatch(getPublicProfile(userId));
+    console.log(apiResponse);
+    if (apiResponse.payload.success === true) {
+      navigate(`/profile/${apiResponse?.payload?.data?.user?._id}`);
+    }
+  };
+
   return (
     <div className="bg-white shadow-sm rounded-lg p-4 mb-2 relative border border-orange-100">
       {/* Header */}
-      <div className="flex justify-between items-start">
-        <div className="flex gap-2 items-center">
+      <div
+        onClick={() => getPublicUserProfile(post.author._id)}
+        className="flex justify-between items-start"
+      >
+        <div className="flex gap-2 items-center cursor-pointer">
           <div
             className="w-12 h-12 font-semibold text-xl rounded-full flex items-center justify-center"
             style={{ backgroundColor, color: textColor }}
@@ -93,7 +107,7 @@ const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
       </div>
 
       {/* Post Content */}
-      <div className="mt-4 text-gray-800 whitespace-pre-line">
+      <div className="mt-4 text-gray-800 whitespace-pre-line text-[15px]">
         {post.content}
       </div>
 

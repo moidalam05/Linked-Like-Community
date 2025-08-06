@@ -103,6 +103,29 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
+export const getPublicProfile = createAsyncThunk(
+  "users/publicProfile",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await toast.promise(
+        axios.get(`${API}/users/profile/${userId}`),
+        {
+          loading: "Hold on, we are fetching your profile",
+          success: (res) => res?.data?.message,
+          error: (err) =>
+            err?.response?.data?.message || "Something went wrong",
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data || { message: "Something went wrong" }
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -173,6 +196,19 @@ const authSlice = createSlice({
         state.user = action.payload.data;
       })
       .addCase(getUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // public profile
+      .addCase(getPublicProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPublicProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(getPublicProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

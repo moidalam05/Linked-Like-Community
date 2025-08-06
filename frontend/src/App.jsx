@@ -5,6 +5,7 @@ import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import Profile from "./pages/users/Profile";
 import RequireAuth from "./components/auth/RequireAuth";
+import PublicProfile from "./pages/users/PublicProfile";
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/profile/:id" element={<PublicProfile />} />
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
