@@ -88,11 +88,20 @@ export const getUserProfile = createAsyncThunk(
   "users/profile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await toast.promise(axios.get(`${API}/users/profile`), {
-        loading: "Hold on, we are fetching your profile",
-        success: (res) => res?.data?.message,
-        error: (err) => err?.response?.data?.message || "Something went wrong",
-      });
+      const response = await toast.promise(
+        axios.get(`${API}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          withCredentials: true,
+        }),
+        {
+          loading: "Hold on, we are fetching your profile",
+          success: (res) => res?.data?.message,
+          error: (err) =>
+            err?.response?.data?.message || "Something went wrong",
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -131,7 +140,12 @@ export const updateBio = createAsyncThunk(
   async (bio, { rejectWithValue }) => {
     try {
       const response = await toast.promise(
-        axios.patch(`${API}/users/profile`, bio),
+        axios.patch(`${API}/users/profile`, bio, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          withCredentials: true,
+        }),
         {
           loading: "Hold on, we are updating your bio",
           success: (res) => res?.data?.message,

@@ -17,7 +17,12 @@ export const createPost = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await toast.promise(
-        axios.post(`${API}/posts`, formData),
+        axios.post(`${API}/posts`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          withCredentials: true,
+        }),
         {
           loading: "Hold on, we are creating your post",
           success: (res) => res?.data?.message,
@@ -58,7 +63,12 @@ export const deletePost = createAsyncThunk(
   async (postId, { rejectWithValue }) => {
     try {
       const response = await toast.promise(
-        axios.delete(`${API}/posts/${postId}`),
+        axios.delete(`${API}/posts/${postId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          withCredentials: true,
+        }),
         {
           loading: "Hold on, we are deleting your post",
           success: (res) => res?.data?.message,
