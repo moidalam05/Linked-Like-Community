@@ -24,10 +24,6 @@ export const loginSchema = z.object({
 });
 
 export const updateUserProfileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").optional(),
-  email: z.string().refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
-    message: "Please enter a valid email address",
-  }),
   bio: z.string().max(200, "Bio must be under 160 characters").optional(),
 });
 

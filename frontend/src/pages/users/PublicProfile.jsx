@@ -12,7 +12,7 @@ const PublicProfile = () => {
   if (!user) return <div>No profile data found.</div>;
 
   const { backgroundColor, textColor } = generateVibrantColorsFromString(
-    user?.user?.name.charAt(0)
+    user?.user?.name
   );
 
   return (
@@ -31,12 +31,7 @@ const PublicProfile = () => {
               <MdVerified className="text-blue-600 text-[18px] mt-1" />
             </div>
             <p className="text-[15px] text-gray-500 leading-5">
-              {user?.user?.bio}Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Odio sequi corrupti, dolorem laboriosam odit nam
-              vero magnam dolor in rem quos mollitia ipsa commodi sit atque
-              quibusdam nobis distinctio deleniti voluptatem magni labore!
-              Facilis doloremque illo dolorem officia eius. Nulla pariatur nam
-              voluptate incidunt, unde illo beatae dolorem nostrum ab.
+              {user?.user?.bio}
             </p>
           </div>
         </div>

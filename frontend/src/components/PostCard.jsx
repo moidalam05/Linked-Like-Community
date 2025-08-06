@@ -15,7 +15,7 @@ const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
   const menuRef = useRef(null);
 
   const { backgroundColor, textColor } = generateColorsFromString(
-    post.author.name
+    post?.author?.name
   );
 
   useEffect(() => {
@@ -33,9 +33,8 @@ const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
     addSuffix: true,
   });
 
-  const handleDeletePost = async () => {
-    const apiResponse = await dispatch(deletePost(post._id));
-    console.log(apiResponse);
+  const handleDeletePost = async (postId) => {
+    const apiResponse = await dispatch(deletePost(postId));
 
     if (apiResponse.payload) {
       console.log("Post deleted successfully");
@@ -58,25 +57,25 @@ const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
   return (
     <div className="bg-white shadow-sm rounded-lg p-4 mb-2 relative border border-orange-100">
       {/* Header */}
-      <div
-        onClick={() => getPublicUserProfile(post.author._id)}
-        className="flex justify-between items-start"
-      >
-        <div className="flex gap-2 items-center cursor-pointer">
+      <div className="flex justify-between items-start">
+        <div
+          onClick={() => getPublicUserProfile(post?.author?._id)}
+          className="flex gap-2 items-center cursor-pointer"
+        >
           <div
             className="w-12 h-12 font-semibold text-xl rounded-full flex items-center justify-center"
             style={{ backgroundColor, color: textColor }}
           >
-            {post.author.name.charAt(0)}
+            {post?.author?.name?.charAt(0)}
           </div>
           <div>
-            <h2 className="font-semibold text-lg">{post.author.name}</h2>
+            <h2 className="font-semibold text-lg">{post?.author?.name}</h2>
             <p className="text-xs text-gray-400">{timeAgo}</p>
           </div>
         </div>
 
         {/* Three Dots Menu */}
-        {isAuthenticated && user._id === post.author._id && (
+        {isAuthenticated && user?._id === post?.author?._id && (
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -89,13 +88,9 @@ const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
             {showMenu && (
               <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded shadow-lg z-50 animate-fadeIn">
                 <button
-                  onClick={() => alert("Edit clicked")}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  ✏️ Edit Post
-                </button>
-                <button
-                  onClick={handleDeletePost}
+                  onClick={() => {
+                    handleDeletePost(post?._id);
+                  }}
                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                 >
                   🗑️ Delete Post

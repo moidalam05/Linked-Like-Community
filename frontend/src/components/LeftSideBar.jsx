@@ -1,14 +1,38 @@
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import generateVibrantColorsFromString from "../hooks/generateColorForString";
 import profileImage from "../assets/profile.jpg";
+import { useEffect } from "react";
+import { getUserProfile } from "../features/auth/authSlice";
 
 const LeftSidebar = () => {
-  const { data } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  let { user, isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!isAuthenticated) {
+        return;
+      }
+      const apiResponse = await dispatch(getUserProfile());
+
+      if (apiResponse.payload.success === true) {
+        console.log(apiResponse.payload.data);
+      }
+    }
+    fetchUserData();
+  }, [dispatch, isAuthenticated]);
+
   const { backgroundColor, textColor } = generateVibrantColorsFromString(
-    data?.name.charAt(0)
+    user?.user?.name
   );
-  if (!data)
+
+  console.log("user", user);
+
+  if (!isAuthenticated) {
+    user = null;
+  }
+  if (!user)
     return (
       <div className="hidden lg:block w-1/5 p-4 bg-white shadow-sm rounded-lg h-max sticky top-28 z-10 border border-orange-100">
         <h2 className="text-lg font-semibold mb-4">Welcome, there 👋</h2>
@@ -46,7 +70,9 @@ const LeftSidebar = () => {
 
   return (
     <div className="hidden lg:block w-1/5 p-4 bg-white shadow-sm rounded-lg h-max sticky top-28 z-10 border border-orange-100">
-      <h2 className="text-lg font-semibold mb-4">Welcome, {data?.name} 👋</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        Welcome, {user?.user?.name} 👋
+      </h2>
 
       {/* Profile Section */}
       <Link
@@ -60,14 +86,14 @@ const LeftSidebar = () => {
             className="w-16 h-16 rounded-full border-4 border-white absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center text-2xl font-semibold"
             style={{ backgroundColor, color: textColor }}
           >
-            {data?.name.charAt(0)}
+            {user?.user?.name.charAt(0)}
           </p>
         </div>
 
         {/* Name and Bio */}
         <div className="pt-10 pb-4 text-center px-2">
-          <h3 className="font-semibold text-gray-800">{data?.name}</h3>
-          <p className="text-sm text-gray-500">{data?.bio}</p>
+          <h3 className="font-semibold text-gray-800">{user?.user?.name}</h3>
+          <p className="text-sm text-gray-500">{user?.user?.bio}</p>
         </div>
       </Link>
 

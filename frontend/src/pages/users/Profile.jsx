@@ -1,28 +1,48 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../Layout/Layout";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserProfile } from "../../features/auth/authSlice";
+import { getUserProfile, updateBio } from "../../features/auth/authSlice";
 import { formatDistanceToNow } from "date-fns";
 import generateVibrantColorsFromString from "../../hooks/generateColorForString";
 import { MdVerified } from "react-icons/md";
+import { FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const [addBioToggle, setAddBioToggle] = useState(false);
+  const [addBio, setAddBio] = useState({
+    bio: "",
+  });
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     async function fetchUserProfile() {
-      const apiResponse = await dispatch(getUserProfile());
-      console.log("apiResponse", apiResponse);
+      await dispatch(getUserProfile());
     }
     fetchUserProfile();
   }, [dispatch]);
 
-  const { user, loading } = useSelector((state) => state.auth);
+  const { user, loading, isAuthenticated } = useSelector((state) => state.auth);
   if (loading) return <div>Loading profile...</div>;
   if (!user) return <div>No profile data found.</div>;
 
   const { backgroundColor, textColor } = generateVibrantColorsFromString(
-    user?.user?.name.charAt(0)
+    user?.user?.name
   );
+
+  const updateProfileToAddBio = async (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      return navigate("/login");
+    }
+    const apiResponse = await dispatch(updateBio(addBio));
+    if (apiResponse.payload.success === true) {
+      setAddBioToggle(false);
+      await dispatch(getUserProfile());
+      setAddBio({ bio: "" });
+    }
+  };
 
   return (
     <Layout>
@@ -36,27 +56,52 @@ const Profile = () => {
           </h2>
           <div className="w-full md:w-[80%] text-center md:text-left">
             <div className="text-2xl font-semibold text-gray-800 flex items-center gap-2 justify-center md:justify-start">
-              <p className="text-4xl mb-2">{user.user.name}</p>
+              <p className="text-4xl mb-2">{user?.user?.name}</p>
               <MdVerified className="text-blue-600 text-[18px] mt-1" />
             </div>
             <p className="text-[15px] text-gray-500 leading-5">
-              {user?.user?.bio} Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Odio sequi corrupti, dolorem laboriosam odit nam
-              vero magnam dolor in rem quos mollitia ipsa commodi sit atque
-              quibusdam nobis distinctio deleniti voluptatem magni labore!
-              Facilis doloremque illo dolorem officia eius. Nulla pariatur nam
-              voluptate incidunt, unde illo beatae dolorem nostrum ab.
+              {user?.user?.bio}
             </p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="mt-8 flex border-b border-gray-200 space-x-6 text-gray-600 text-sm font-medium"></div>
+        <div className="mt-8 border-b border-gray-200 text-gray-600 text-sm font-medium flex flex-col md:flex-row items-center justify-between w-full py-2">
+          <button
+            onClick={() => {
+              setAddBioToggle((prev) => !prev);
+            }}
+            className="flex items-center gap-2 py-2 text-blue-600 underline cursor-pointer text-lg md:text-xl"
+          >
+            Add Bio <FaEdit />
+          </button>
+          <textarea
+            name="bio"
+            id="bio"
+            placeholder="Add your bio"
+            className={`${
+              addBioToggle ? "block" : "hidden"
+            } w-full md:w-[60%] rounded-md p-2 resize-none border border-gray-400 my-2`}
+            rows="2"
+            value={addBio.bio}
+            onChange={(e) => setAddBio({ ...addBio, bio: e.target.value })}
+          ></textarea>
+
+          <button
+            onClick={updateProfileToAddBio}
+            type="submit"
+            className={`${
+              addBioToggle ? "block" : "hidden"
+            } bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition cursor-pointer`}
+          >
+            Add Bio
+          </button>
+        </div>
 
         {/* Posts Section */}
         <div className="mt-6 space-y-4">
           <h3 className="text-lg font-semibold text-gray-700">Posts</h3>
-          {user?.posts.map((post) => (
+          {user?.posts?.map((post) => (
             <div key={post._id} className="bg-white shadow rounded-lg p-4">
               <div className="flex items-center gap-3 mb-2">
                 <div

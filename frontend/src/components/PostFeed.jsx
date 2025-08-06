@@ -35,12 +35,11 @@ const PostFeed = () => {
 
   const handlePostSubmit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      return navigate("/login");
+    }
     const apiResponse = await dispatch(createPost(postData));
-
-    console.log(apiResponse);
     if (apiResponse.payload.success === true) {
-      console.log("hello");
-
       setPostData({ content: "" });
       const apiResponse = await dispatch(getPosts());
 
@@ -93,6 +92,7 @@ const PostFeed = () => {
             post={post}
             isAuthenticated={isAuthenticated}
             user={data}
+            setPosts={setPosts}
           />
         ))}
       </div>

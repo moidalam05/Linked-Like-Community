@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/users/Profile";
 import RequireAuth from "./components/auth/RequireAuth";
 import PublicProfile from "./pages/users/PublicProfile";
+import PageNotFound from "./pages/PageNotFound";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route element={<RequireAuth />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </>
   );

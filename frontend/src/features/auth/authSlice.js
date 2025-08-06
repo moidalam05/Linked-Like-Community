@@ -126,6 +126,29 @@ export const getPublicProfile = createAsyncThunk(
   }
 );
 
+export const updateBio = createAsyncThunk(
+  "users/updateBio",
+  async (bio, { rejectWithValue }) => {
+    try {
+      const response = await toast.promise(
+        axios.patch(`${API}/users/profile`, bio),
+        {
+          loading: "Hold on, we are updating your bio",
+          success: (res) => res?.data?.message,
+          error: (err) =>
+            err?.response?.data?.message || "Something went wrong",
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data || { message: "Something went wrong" }
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -209,6 +232,19 @@ const authSlice = createSlice({
         state.user = action.payload.data;
       })
       .addCase(getPublicProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      //   update bio
+      .addCase(updateBio.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateBio.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(updateBio.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

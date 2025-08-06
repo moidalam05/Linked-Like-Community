@@ -1,26 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { HiMenu } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../features/auth/authSlice";
+import { MdLogout } from "react-icons/md";
+import generateVibrantColorsFromString from "../hooks/generateColorForString";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
   const { isAuthenticated, data } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   const handleLogout = () => {
     const apiResponse = dispatch(logoutUser());
@@ -28,6 +17,10 @@ const Navbar = () => {
       window.location.reload();
     }
   };
+
+  const { backgroundColor, textColor } = generateVibrantColorsFromString(
+    data?.name
+  );
 
   return (
     <nav className="bg-white text-gray-500 shadow-md border-b fixed w-full border-b-orange-100 z-50">
@@ -85,41 +78,26 @@ const Navbar = () => {
               </Link>
             </>
           ) : (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <div className="w-10 h-10 flex justify-center items-center rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-semibold text-xl">
+            <div className="flex items-center gap-4">
+              <button>
+                <div
+                  className="w-10 h-10 flex justify-center items-center rounded-full text-white font-semibold text-xl"
+                  style={{ backgroundColor, color: textColor }}
+                >
                   {data?.name.charAt(0).toUpperCase()}
                 </div>
               </button>
-
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-md z-50">
-                  <Link
-                    to="/profile/update"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Update Profile
-                  </Link>
-                  <Link
-                    to="/profile/change-password"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                  >
-                    Change Password
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      handleLogout();
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              <div className="text-md font-semibold ">
+                <button
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                  className="cursor-pointer flex items-center gap-[4px]   "
+                >
+                  Logout
+                  <MdLogout />
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -180,15 +158,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/profile/update" className="block hover:underline">
-                Update Profile
-              </Link>
-              <Link
-                to="/profile/change-password"
-                className="block hover:underline"
-              >
-                Change Password
-              </Link>
               <button
                 onClick={handleLogout}
                 className="block w-full text-left hover:underline"
