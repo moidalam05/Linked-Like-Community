@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 const LeftSidebar = () => {
+  
   return (
     <div className="hidden lg:block w-1/5 p-4 bg-white shadow-sm rounded-lg h-max sticky top-28 z-10 border border-orange-100">
       <h2 className="text-lg font-semibold mb-4">Welcome, Moid 👋</h2>

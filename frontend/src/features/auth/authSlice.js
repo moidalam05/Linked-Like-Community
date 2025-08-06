@@ -84,6 +84,25 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+export const getUserProfile = createAsyncThunk(
+  "users/profile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await toast.promise(axios.get(`${API}/users/profile`), {
+        loading: "Hold on, we are fetching your profile",
+        success: (res) => res?.data?.message,
+        error: (err) => err?.response?.data?.message || "Something went wrong",
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data || { message: "Something went wrong" }
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -141,6 +160,19 @@ const authSlice = createSlice({
         localStorage.removeItem("data");
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      //   get user profile
+      .addCase(getUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data;
+      })
+      .addCase(getUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
