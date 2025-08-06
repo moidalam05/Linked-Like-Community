@@ -1,8 +1,64 @@
-import React from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { FaUser, FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../features/auth/authSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [passwordValidations, setPasswordValidations] = useState({
+    length: false,
+    uppercase: false,
+    number: false,
+    specialChar: false,
+  });
+
+  const validatePassword = (password) => {
+    setPasswordValidations({
+      length: password.length >= 6,
+      uppercase: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      specialChar: /[!@#$%^&*]/.test(password),
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({ ...userData, [name]: value });
+
+    if (name === "password") {
+      validatePassword(value);
+    }
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password } = userData;
+    if (!email || !password) return toast.error("All fields are required");
+    if (
+      !passwordValidations.length ||
+      !passwordValidations.uppercase ||
+      !passwordValidations.number ||
+      !passwordValidations.specialChar
+    )
+      return;
+
+    if (!email.includes("@") && !email.includes(".com")) {
+      return toast.error("Please enter a valid email address");
+    }
+    const apiResponse = await dispatch(loginUser(userData));
+
+    if (apiResponse.payload.success === true) {
+      navigate("/");
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] to-[#e3f2fd] p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
@@ -10,7 +66,7 @@ const Login = () => {
           Welcome Back
         </h2>
 
-        <form className="space-y-5">
+        <form onSubmit={handleFormSubmit} className="space-y-5">
           {/* Email */}
           <div className="relative">
             <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -18,6 +74,9 @@ const Login = () => {
               type="email"
               placeholder="Email"
               className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              name="email"
+              value={userData.email}
+              onChange={handleInputChange}
             />
           </div>
 
@@ -28,7 +87,48 @@ const Login = () => {
               type="password"
               placeholder="Password"
               className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              name="password"
+              value={userData.password}
+              onChange={handleInputChange}
             />
+          </div>
+
+          {/* password guideline  */}
+          <div className="text-sm text-gray-600 mt-2 space-y-1">
+            <p
+              className={
+                passwordValidations.length ? "text-green-600" : "text-red-600"
+              }
+            >
+              {passwordValidations.length ? "✅" : "❌"} At least 6 characters
+            </p>
+            <p
+              className={
+                passwordValidations.uppercase
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
+            >
+              {passwordValidations.uppercase ? "✅" : "❌"} One uppercase letter
+            </p>
+
+            <p
+              className={
+                passwordValidations.number ? "text-green-600" : "text-red-600"
+              }
+            >
+              {passwordValidations.number ? "✅" : "❌"} One number
+            </p>
+            <p
+              className={
+                passwordValidations.specialChar
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
+            >
+              {passwordValidations.specialChar ? "✅" : "❌"} One special
+              character (!@#$%^&*)
+            </p>
           </div>
 
           {/* Button */}
