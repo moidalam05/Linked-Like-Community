@@ -8,8 +8,8 @@ const Home = () => {
   return (
     <div>
       <Layout>
-        <div className="min-h-screen bg-[#f4f2ee] pt-8 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+        <div className="min-h-screen bg-[#f4f2ee] py-28 px-4 overflow-visible">
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 overflow-visible">
             <LeftSidebar />
 
             <div className="flex-1">

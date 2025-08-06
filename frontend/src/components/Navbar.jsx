@@ -21,8 +21,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-white text-gray-500 shadow-md border-b border-b-orange-100">
-      <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
+    <nav className="bg-white text-gray-500 shadow-md border-b fixed w-full border-b-orange-100 z-50">
+      <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between ">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-black tracking-wide">
           XploreConnect
