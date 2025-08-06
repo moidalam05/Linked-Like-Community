@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
 import { HiMenu } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../features/auth/authSlice";
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Close dropdown on outside click
+  const { isAuthenticated, data } = useSelector((state) => state.auth);
+
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -19,6 +21,13 @@ const Navbar = () => {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const handleLogout = () => {
+    const apiResponse = dispatch(logoutUser());
+    if (apiResponse.payload.success === true) {
+      window.location.reload();
+    }
+  };
 
   return (
     <nav className="bg-white text-gray-500 shadow-md border-b fixed w-full border-b-orange-100 z-50">
@@ -66,7 +75,7 @@ const Navbar = () => {
 
         {/* Auth / Profile */}
         <div className="hidden md:flex items-center gap-4">
-          {!isLoggedIn ? (
+          {!isAuthenticated ? (
             <>
               <Link
                 to="/login"
@@ -79,10 +88,11 @@ const Navbar = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 cursor-pointer"
               >
-                <FaUserCircle className="text-2xl" />
-                <span className="hidden sm:inline">Profile</span>
+                <div className="w-10 h-10 flex justify-center items-center rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-semibold text-xl">
+                  {data?.name.charAt(0).toUpperCase()}
+                </div>
               </button>
 
               {dropdownOpen && (
@@ -101,8 +111,8 @@ const Navbar = () => {
                   </Link>
                   <button
                     onClick={() => {
-                      setIsLoggedIn(false); // replace with logout logic
                       setDropdownOpen(false);
+                      handleLogout();
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   >
@@ -159,7 +169,7 @@ const Navbar = () => {
             Jobs
           </NavLink>
 
-          {!isLoggedIn ? (
+          {!isAuthenticated ? (
             <>
               <Link
                 to="/login"
@@ -180,7 +190,7 @@ const Navbar = () => {
                 Change Password
               </Link>
               <button
-                onClick={() => setIsLoggedIn(false)}
+                onClick={handleLogout}
                 className="block w-full text-left hover:underline"
               >
                 Logout

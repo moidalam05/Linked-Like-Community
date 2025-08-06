@@ -3,11 +3,15 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const API = import.meta.env.VITE_BASE_URL;
+axios.defaults.withCredentials = true;
 
 const initialState = {
-  isLoggedIn: localStorage.getItem("isLoggedIn") === "true",
+  isAuthenticated: localStorage.getItem("isAuthenticated") || false,
+  loading: false,
   token: localStorage.getItem("authToken") || null,
-  data: JSON.parse(localStorage.getItem("data")) || null,
+  data: localStorage.getItem("data")
+    ? JSON.parse(localStorage.getItem("data"))
+    : null,
   error: null,
 };
 
@@ -46,10 +50,35 @@ export const loginUser = createAsyncThunk(
             err?.response?.data?.message || "Something went wrong",
         }
       );
+
+      console.log(response.data.data.token);
+
+      localStorage.setItem("authToken", response.data.data.token);
+      localStorage.setItem("isAuthenticated", true);
+      const { name, email } = response.data.data.user;
+      localStorage.setItem("data", JSON.stringify({ name, email }));
+
       return response.data;
     } catch (error) {
       return rejectWithValue(
         error?.response?.data || { message: "Unknown error" }
+      );
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk(
+  "users/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API}/users/logout`);
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("data");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data || { message: "Something went wrong" }
       );
     }
   }
@@ -65,15 +94,53 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      //   register
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.data;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //   login
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.data = action.payload.data.user;
+        state.token = action.payload.data.token;
+        localStorage.setItem("authToken", action.payload.data.token);
+        localStorage.setItem("isAuthenticated", true);
+        localStorage.setItem("data", JSON.stringify(action.payload.data.user));
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // logout
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.data = null;
+        state.token = null;
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("isAuthenticated");
+        localStorage.removeItem("data");
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
+import e from "express";
 
 const options = {
   httpOnly: true,
@@ -58,7 +59,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   return res
     .cookie("authToken", token, options)
     .status(200)
-    .json(new ApiResponse(200, user, "User logged in successfully"));
+    .json(new ApiResponse(200, { user, token }, "User logged in successfully"));
 });
 
 // Logout user

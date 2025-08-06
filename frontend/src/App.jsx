@@ -4,6 +4,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import Profile from "./pages/users/Profile";
+import RequireAuth from "./components/auth/RequireAuth";
 
 const App = () => {
   return (

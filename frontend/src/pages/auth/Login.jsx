@@ -54,6 +54,7 @@ const Login = () => {
       return toast.error("Please enter a valid email address");
     }
     const apiResponse = await dispatch(loginUser(userData));
+    console.log(apiResponse);
 
     if (apiResponse.payload.success === true) {
       navigate("/");
