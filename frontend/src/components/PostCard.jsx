@@ -1,13 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaRegThumbsUp, FaRegCommentDots, FaShare } from "react-icons/fa";
+import { formatDistanceToNow } from "date-fns";
+import generateColorsFromString from "../hooks/generateColorForString";
+import { deletePost, getPosts } from "../features/posts/postSlice";
+import { useDispatch } from "react-redux";
 
-const PostCard = ({ post, currentUserId }) => {
+const PostCard = ({ post, isAuthenticated, user, setPosts }) => {
+  const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
-  const isOwner = currentUserId === post.userId;
 
-  // ✅ Close menu on outside click
+  const { backgroundColor, textColor } = generateColorsFromString(
+    post.author.name
+  );
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -19,18 +26,43 @@ const PostCard = ({ post, currentUserId }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
+    addSuffix: true,
+  });
+
+  const handleDeletePost = async () => {
+    const apiResponse = await dispatch(deletePost(post._id));
+    console.log(apiResponse);
+
+    if (apiResponse.payload) {
+      console.log("Post deleted successfully");
+      const apiResponse = await dispatch(getPosts());
+
+      if (apiResponse.payload.success === true) {
+        setPosts(apiResponse.payload.data);
+      }
+    }
+  };
+
   return (
     <div className="bg-white shadow-sm rounded-lg p-4 mb-2 relative border border-orange-100">
       {/* Header */}
       <div className="flex justify-between items-start">
-        <div>
-          <h2 className="font-semibold text-lg">{post.name}</h2>
-          <p className="text-sm text-gray-500">{post.designation}</p>
-          <p className="text-xs text-gray-400">{post.timeAgo}</p>
+        <div className="flex gap-2 items-center">
+          <div
+            className="w-12 h-12 font-semibold text-xl rounded-full flex items-center justify-center"
+            style={{ backgroundColor, color: textColor }}
+          >
+            {post.author.name.charAt(0)}
+          </div>
+          <div>
+            <h2 className="font-semibold text-lg">{post.author.name}</h2>
+            <p className="text-xs text-gray-400">{timeAgo}</p>
+          </div>
         </div>
 
         {/* Three Dots Menu */}
-        {isOwner && (
+        {isAuthenticated && user._id === post.author._id && (
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -49,7 +81,7 @@ const PostCard = ({ post, currentUserId }) => {
                   ✏️ Edit Post
                 </button>
                 <button
-                  onClick={() => alert("Delete clicked")}
+                  onClick={handleDeletePost}
                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                 >
                   🗑️ Delete Post
