@@ -1,6 +1,6 @@
 const RightSidebar = () => {
   return (
-    <div className="hidden xl:block w-1/4 p-4 bg-white shadow rounded-lg h-fit sticky top-28">
+    <div className="hidden xl:block w-1/4 p-4 bg-white shadow-sm rounded-lg h-fit sticky top-28 border border-orange-100">
       <h2 className="text-lg font-semibold mb-4">People you may know</h2>
       <div className="space-y-3">
         <div className="flex justify-between items-center">

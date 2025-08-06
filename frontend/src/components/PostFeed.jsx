@@ -1,17 +1,74 @@
+import PostCard from "./PostCard";
+import { FaImage, FaSmile, FaPaperPlane } from "react-icons/fa";
+
+const posts = [
+  {
+    _id: "1",
+    name: "Akashdeep Singh",
+    designation: "Mern stack || React.js developer || tailwind css|| Next.js",
+    content: "I'm interested",
+    userId: "123",
+    timeAgo: "5d",
+  },
+  {
+    _id: "1",
+    name: "Akashdeep Singh",
+    designation: "Mern stack || React.js developer || tailwind css|| Next.js",
+    content: "I'm interested",
+    userId: "123",
+    timeAgo: "5d",
+  },
+  {
+    _id: "1",
+    name: "Akashdeep Singh",
+    designation: "Mern stack || React.js developer || tailwind css|| Next.js",
+    content: "I'm interested",
+    userId: "123",
+    timeAgo: "5d",
+  },
+];
+
 const PostFeed = () => {
+  const currentUserId = "123";
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow border border-orange-100">
-      <h2 className="text-xl font-semibold mb-4">Community Feed</h2>
-      <div className="space-y-4">
-        <div className="p-3 border rounded">
-          <p className="text-sm text-gray-700">✨ Welcome to XploreNexus!</p>
-        </div>
-        <div className="p-3 border rounded">
-          <p className="text-sm text-gray-700">
-            🚀 Moid just posted something amazing!
-          </p>
-        </div>
-        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Similique repellendus corporis error ab iusto voluptates quae praesentium nisi, cupiditate maiores vel sunt numquam ipsam inventore asperiores illum fugit magnam, aliquid magni excepturi porro est at molestias dignissimos. Possimus quaerat iusto ad unde, nostrum omnis ducimus exercitationem nemo, commodi eos dicta eveniet voluptatem fugiat dolores magni cupiditate eligendi suscipit quis vero doloremque veritatis corrupti hic. Quasi, suscipit fuga nam labore necessitatibus rem ut, reprehenderit molestiae culpa quisquam, libero ipsam atque. Qui facilis maiores, earum hic accusantium voluptatem exercitationem fuga mollitia illo aliquid accusamus. Ipsam voluptatibus, repellendus eius molestias dolorem totam nisi reprehenderit ad, maiores id aliquam temporibus, quae consectetur facere autem molestiae voluptate. Inventore, excepturi facere? Quod quasi cumque nesciunt itaque beatae sunt molestias nisi sit cum sed doloremque aperiam, nam perferendis suscipit delectus ipsa eos labore in dicta distinctio, laudantium rerum? Eligendi iste, dolor architecto exercitationem soluta eveniet deleniti voluptatibus voluptas vel saepe, sequi, odit fugiat cumque necessitatibus. Recusandae illum, eveniet repellat dicta impedit eos, aspernatur natus cum laborum saepe voluptatem maiores, dolorem quae commodi nobis qui odio omnis autem nesciunt neque iusto? Maiores, ipsam. Facilis quibusdam suscipit a, praesentium quisquam tempore molestias eligendi obcaecati magnam. Accusantium rem aperiam neque quo inventore sit mollitia libero molestiae? Ad quas magnam blanditiis quaerat quo, fugit ducimus delectus quidem voluptatum! Repellendus, dolor, id aliquid aliquam modi, odio quia consequatur deleniti dolorum nostrum ad. Labore tempore culpa vitae sunt laudantium voluptatibus dolores quo corporis asperiores autem tenetur, alias dolorem iusto, quam cupiditate, totam officia enim! Voluptatibus, exercitationem commodi eligendi tempore assumenda sit reprehenderit autem nulla temporibus voluptates optio aspernatur et obcaecati omnis laudantium, saepe veniam quasi consectetur debitis neque aliquam vero aut. Expedita laborum enim labore reiciendis voluptas magnam nobis, possimus dolorum laboriosam? Sunt dolorum in ipsam recusandae quasi inventore porro accusamus ut repellat voluptatum aliquam, dignissimos nobis mollitia voluptates dolorem iure? Aperiam minima fugit tempora provident ipsum sunt molestiae laudantium, ex explicabo? Nobis sed qui laudantium perspiciatis! Vitae voluptatibus rem ex laborum! Ab, laudantium voluptates possimus sunt quos consequatur libero saepe recusandae minima? Reiciendis atque eum culpa nobis itaque ducimus et, laudantium perspiciatis sed natus ullam, minus totam odit saepe ratione veniam blanditiis eligendi velit tempora quaerat pariatur quae? Tempora minus rerum odit! Commodi optio sequi est cupiditate laborum aliquam perferendis eos ab corrupti. Incidunt, labore deserunt nam tempore quos ipsam amet numquam ipsum ea neque corrupti reprehenderit doloremque dicta. Placeat voluptatum vitae voluptas natus laudantium odit animi in rerum fugit consequuntur eos delectus, veritatis, maiores, culpa nemo minima ab consequatur eaque quisquam. Adipisci delectus cumque, aliquam, beatae aut eum fugit non nesciunt ab praesentium repellat nobis dolor, eveniet odio sit! Iste doloribus accusamus sapiente, eius saepe a delectus, eum beatae asperiores fugiat dolorem sunt dolore fugit tempora minus numquam ut. Illo natus saepe quod labore doloremque rem suscipit earum tenetur velit ullam dolore, aliquid eos beatae aspernatur consectetur inventore laudantium id voluptatibus magni. Nam repellendus error alias voluptatum, similique quo accusamus aperiam temporibus, dolorem, repellat excepturi provident quia aut veritatis voluptatem tempore?</p>
+    <div className="max-w-2xl mx-auto">
+      {/* --- Post Form --- */}
+      <div className="mb-4 bg-white p-4 rounded-lg shadow border border-orange-100">
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          Create a Post
+        </h2>
+        <form className="space-y-2">
+          <textarea
+            placeholder="What's on your mind?"
+            className="w-full rounded-md p-2 resize-none border border-gray-400"
+            rows="3"
+          ></textarea>
+
+          <div className="flex items-center justify-between">
+            <div className="flex gap-3 text-gray-500">
+              <FaImage className="cursor-pointer" title="Add image" />
+              <FaSmile className="cursor-pointer" title="Add emoji" />
+            </div>
+
+            <button
+              type="submit"
+              className="flex items-center gap-1 bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition cursor-pointer"
+            >
+              <FaPaperPlane /> Post
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* --- Divider --- */}
+      <hr className="border-t border-gray-300 my-4" />
+
+      {/* --- Post Feed --- */}
+      <div className="space-y-8">
+        {posts.map((post) => (
+          <PostCard key={post._id} post={post} currentUserId={currentUserId} />
+        ))}
       </div>
     </div>
   );
